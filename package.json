@@ -18,5 +18,8 @@
   "overrides": {
     "word-wrap": "npm:@aashutoshrathi/word-wrap",
     "optionator": "^0.9.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.44.0"
   }
 }

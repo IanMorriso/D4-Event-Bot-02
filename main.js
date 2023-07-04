@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const {AttachmentBuilder, EmbedBuilder} = require('discord.js');
 const puppeteer = require('puppeteer');
 const Database = require('@replit/database');
 const config = require('./config.json')
@@ -11,13 +12,17 @@ const client = new Discord.Client({ intents: [
     Discord.GatewayIntentBits.GuildMessages,
     Discord.GatewayIntentBits.MessageContent
 ] });
-
+client.login(config.token);
 
 // Confirms launch of bot
 client.once('ready', () => {
     console.log('client ready');
 })
-
+//const channel = client.channels.cache.get('1122607092138790945');
+const file = new AttachmentBuilder('test-image-01.png')
+const exampleEmbed = new EmbedBuilder()
+    .setTitle('some text')
+    .setImage('attachment://test-image-01.png')
 
 // Checks for message in discord channel
 client.on('messageCreate', message => {
@@ -29,6 +34,8 @@ client.on('messageCreate', message => {
         message.content === "$boss" ||
         message.content === "$legion") {
             scrapeData(message);
+            let channel = client.channels.cache.get('1122607092138790945');
+            channel.send({embeds: [exampleEmbed], files: [file]})
     }
 })
 
@@ -50,8 +57,8 @@ async function scrapeData(request) {
             // class="leaflet-image-layer leaflet-zoom-animated" gets full image but with other stuff
             selector = '[class="text-xl xl:text-[1.35rem] font-mono mb-4"]';
             await page.waitForSelector('[class="leaflet-image-layer leaflet-zoom-animated"]');
-            const logo = await page.$('[class="leaflet-image-layer leaflet-zoom-animated"]');
-            await logo.screenshot({
+            const map = await page.$('[class="leaflet-image-layer leaflet-zoom-animated"]');
+            await map.screenshot({
                 path: 'test-image-01.png'
             })
             break;
@@ -67,8 +74,12 @@ async function scrapeData(request) {
 
     // Waits for selector to load and replies with remaining time until event trigger
     const data = await page.waitForSelector(selector);
-    request.reply(String(await data?.evaluate(el => el.textContent)))
+    request.reply(String(await data?.evaluate(el => el.textContent)), {
+        files: ['C:\Users\ian_m\Discord Bots\D4EventBot\test-image-01.png']
+    })
+    //request.reply({files: 'test-image-01.png'})
 }
 
 
-client.login(config.token);
+
+
